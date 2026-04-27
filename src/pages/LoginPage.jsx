@@ -53,6 +53,7 @@ export default function LoginPage({ onLogin }) {
               required
               className="w-full"
               inputClassName="w-full"
+              style={{ width: '100%' }}
             />
           </div>
           <Button
