@@ -36,13 +36,13 @@ export default function MaintenanceTab({ session }) {
   }
 
   async function handleTriggerPipeline() {
-    const token = import.meta.env.VITE_GITLAB_TRIGGER_TOKEN
-    const projectId = import.meta.env.VITE_GITLAB_PROJECT_ID
-    if (!token || !projectId) {
+    const token = import.meta.env.VITE_GITHUB_TOKEN
+    const repo = import.meta.env.VITE_GITHUB_REPO || 'Zieszx/clockinoutapp'
+    if (!token) {
       toast.current.show({
         severity: 'warn',
         summary: 'Not Configured',
-        detail: 'Set VITE_GITLAB_TRIGGER_TOKEN and VITE_GITLAB_PROJECT_ID in your environment variables.',
+        detail: 'Set VITE_GITHUB_TOKEN in your environment variables.',
         life: 5000
       })
       return
@@ -50,17 +50,22 @@ export default function MaintenanceTab({ session }) {
     setTriggering(true)
     try {
       const res = await fetch(
-        `https://gitlab.com/api/v4/projects/${projectId}/trigger/pipeline`,
+        `https://api.github.com/repos/${repo}/actions/workflows/deploy.yml/dispatches`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ token, ref: 'main' })
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ ref: 'main' })
         }
       )
-      if (res.ok) {
-        toast.current.show({ severity: 'success', summary: 'Pipeline Triggered', detail: 'Deployment started on GitLab CI.', life: 4000 })
+      if (res.status === 204) {
+        toast.current.show({ severity: 'success', summary: 'Deployment Triggered', detail: 'GitHub Actions workflow started.', life: 4000 })
       } else {
-        throw new Error(`GitLab responded with status ${res.status}`)
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.message || `GitHub responded with status ${res.status}`)
       }
     } catch (err) {
       toast.current.show({ severity: 'error', summary: 'Deploy Failed', detail: err.message, life: 5000 })
