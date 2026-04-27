@@ -59,6 +59,12 @@ export default function DashboardPage({ session, profile, onLogout }) {
 
             <div className="clock-spotlight">
               <LiveClock />
+              <ClockButtons
+                openEntry={openEntry}
+                loading={loading}
+                onClockIn={clockIn}
+                onClockOut={clockOut}
+              />
               <div className="d-flex flex-wrap gap-2">
                 <Tag severity={openEntry ? 'success' : 'info'} value={openEntry ? 'Live session running' : 'No active session'} rounded />
                 {settings?.company_name ? <Tag severity="contrast" value={settings.company_name} rounded /> : null}
@@ -69,21 +75,6 @@ export default function DashboardPage({ session, profile, onLogout }) {
 
         <div className="content-grid">
           <div className="sidebar-stack">
-            <Card className="glass-card clock-card status-panel">
-              <div className="d-flex flex-column gap-4">
-                <div>
-                  <h2 className="section-title">Clock actions</h2>
-                  <p className="section-copy">Start or end your shift with clear status feedback and location-aware validation.</p>
-                </div>
-                <ClockButtons
-                  openEntry={openEntry}
-                  loading={loading}
-                  onClockIn={clockIn}
-                  onClockOut={clockOut}
-                />
-              </div>
-            </Card>
-
             <Card className="glass-card status-panel">
               <div className="d-flex flex-column gap-3">
                 <div>

@@ -26,62 +26,8 @@ jobs:
       - run: npm ci --legacy-peer-deps
       - run: npm run lint
 
-  migrate-supabase:
-    needs: lint
-    runs-on: ubuntu-latest
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      - name: Check migration secrets
-        id: migration-secrets
-        shell: bash
-        run: |
-          if [[ -n "$SUPABASE_ACCESS_TOKEN" && -n "$SUPABASE_PROJECT_ID" && -n "$SUPABASE_DB_PASSWORD" ]]; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "Skipping Supabase migrations because one or more required secrets are missing."
-          fi
-      - name: Link project
-        if: steps.migration-secrets.outputs.available == 'true'
-        run: supabase link --project-ref $SUPABASE_PROJECT_ID --password $SUPABASE_DB_PASSWORD
-      - name: Push database migrations
-        if: steps.migration-secrets.outputs.available == 'true'
-        run: supabase db push --linked --password $SUPABASE_DB_PASSWORD
-
-  deploy-supabase-functions:
-    needs: [lint, migrate-supabase]
-    runs-on: ubuntu-latest
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      - name: Check function deploy secrets
-        id: function-secrets
-        shell: bash
-        run: |
-          if [[ -n "$SUPABASE_ACCESS_TOKEN" && -n "$SUPABASE_PROJECT_ID" ]]; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "Skipping Edge Function deploy because one or more required secrets are missing."
-          fi
-      - name: Deploy Edge Functions
-        if: steps.function-secrets.outputs.available == 'true'
-        run: supabase functions deploy admin-create-user --project-ref $SUPABASE_PROJECT_ID
-
   deploy-pages:
-    needs: [lint, migrate-supabase, deploy-supabase-functions]
+    needs: lint
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -97,7 +43,6 @@ jobs:
         run: npm run build:pages
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_GITHUB_TOKEN: ${{ secrets.VITE_GITHUB_TOKEN }}
           VITE_GITHUB_REPO: Zieszx/clockinoutapp
