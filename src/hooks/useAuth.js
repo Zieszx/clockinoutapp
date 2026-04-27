@@ -49,7 +49,12 @@ export function useAuth() {
   }
 
   async function logout() {
-    await supabase.auth.signOut()
+    try {
+      await supabase.auth.signOut()
+    } finally {
+      setSession(null)
+      setProfile(null)
+    }
   }
 
   return { session, profile, loading, login, logout }
