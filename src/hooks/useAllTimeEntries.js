@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
-export function useAllTimeEntries() {
+export function useAllTimeEntries(companyId) {
   const [entries, setEntries] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -15,6 +15,7 @@ export function useAllTimeEntries() {
 
     if (filters.start) query = query.gte('clock_in', filters.start)
     if (filters.end) query = query.lte('clock_in', filters.end)
+    if (companyId) query = query.eq('company_id', companyId)
 
     const [{ data: entriesData }, { data: profilesData }] = await Promise.all([
       query,
@@ -32,7 +33,7 @@ export function useAllTimeEntries() {
       }))
     )
     setLoading(false)
-  }, [])
+  }, [companyId])
 
   useEffect(() => { fetchAll() }, [fetchAll])
 

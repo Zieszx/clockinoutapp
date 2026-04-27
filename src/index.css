@@ -969,3 +969,60 @@ a {
     padding-inline: 0.65rem;
   }
 }
+
+/* Search results dropdown */
+.search-results-list {
+  border: 1px solid var(--app-border);
+  border-radius: 0.6rem;
+  overflow: hidden;
+  background: var(--app-surface);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
+
+.search-result-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.85rem;
+  color: var(--app-text);
+  cursor: pointer;
+  border-bottom: 1px solid var(--app-border);
+  transition: background 0.15s;
+  line-height: 1.4;
+}
+
+.search-result-item:last-child { border-bottom: none; }
+
+.search-result-item:hover {
+  background: rgba(var(--app-accent-rgb, 2, 132, 199), 0.1);
+  color: var(--app-accent);
+}
+
+/* PrimeReact Dialog glass style */
+.p-dialog .p-dialog-header {
+  background: var(--app-surface) !important;
+  border-bottom: 1px solid var(--app-border) !important;
+  color: var(--app-heading) !important;
+}
+
+.p-dialog .p-dialog-content {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+}
+
+.p-dialog .p-dialog-footer {
+  background: var(--app-surface) !important;
+  border-top: 1px solid var(--app-border) !important;
+}
+
+/* Scrollable admin tabs */
+.admin-tabs .p-tabmenu-nav {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.admin-tabs .p-tabmenu-nav::-webkit-scrollbar { display: none; }

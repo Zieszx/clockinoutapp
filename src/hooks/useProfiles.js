@@ -9,7 +9,7 @@ export function useProfiles() {
     setLoading(true)
     const { data } = await supabase
       .from('profiles')
-      .select('id, email, full_name, role, last_login_at, created_at')
+      .select('id, email, full_name, roles, company_id, last_login_at, created_at, company:companies(id, name)')
       .order('created_at', { ascending: false })
 
     setProfiles(data || [])

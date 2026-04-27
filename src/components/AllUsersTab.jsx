@@ -6,27 +6,36 @@ import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Tag } from 'primereact/tag'
+import { Dropdown } from 'primereact/dropdown'
 import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { supabase } from '../lib/supabase'
 import { useProfiles } from '../hooks/useProfiles'
+import { useCompanies } from '../hooks/useCompanies'
 
 const ROLE_OPTIONS = [
+  { label: 'Super Admin', value: 'super_admin' },
   { label: 'Admin', value: 'admin' },
   { label: 'Employee', value: 'employee' },
 ]
 
-const EMPTY_FORM = { full_name: '', email: '', password: '', roles: ['employee'] }
+const EMPTY_FORM = { full_name: '', email: '', password: '', roles: ['employee'], company_id: null }
 
-export default function AdminUsersTab({ profile }) {
+export default function AllUsersTab() {
   const { profiles, loading, refetch } = useProfiles()
+  const { companies } = useCompanies()
   const [form, setForm] = useState(EMPTY_FORM)
   const [creating, setCreating] = useState(false)
+  const [search, setSearch] = useState('')
   const toast = useRef(null)
 
-  const companyProfiles = profiles.filter(p => p.company_id === profile?.company_id)
-
   function upd(key, val) { setForm(f => ({ ...f, [key]: val })) }
+
+  const filtered = profiles.filter(p =>
+    !search || p.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+    p.email?.toLowerCase().includes(search.toLowerCase()) ||
+    p.company?.name?.toLowerCase().includes(search.toLowerCase())
+  )
 
   async function handleCreate() {
     if (!form.full_name.trim() || !form.email.trim() || !form.password.trim()) {
@@ -37,7 +46,7 @@ export default function AdminUsersTab({ profile }) {
     try {
       const { data: s } = await supabase.auth.getSession()
       const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body: { full_name: form.full_name.trim(), email: form.email.trim(), password: form.password, roles: form.roles, company_id: profile?.company_id },
+        body: { full_name: form.full_name.trim(), email: form.email.trim(), password: form.password, roles: form.roles, company_id: form.company_id },
         headers: { Authorization: `Bearer ${s.session?.access_token}` }
       })
       if (error || data?.error) throw new Error(data?.error || error?.message)
@@ -53,10 +62,12 @@ export default function AdminUsersTab({ profile }) {
   const rolesBody = row => (
     <div className="d-flex flex-wrap gap-1">
       {(row.roles || ['employee']).map(r => (
-        <Tag key={r} severity={r === 'admin' ? 'warning' : 'info'} value={r} rounded />
+        <Tag key={r} severity={r === 'super_admin' ? 'danger' : r === 'admin' ? 'warning' : 'info'} value={r} rounded />
       ))}
     </div>
   )
+
+  const companyBody = row => row.company?.name || <span style={{ color: 'var(--app-text-soft)' }}>—</span>
 
   return (
     <>
@@ -65,8 +76,8 @@ export default function AdminUsersTab({ profile }) {
         <Card className="glass-card maintenance-card maintenance-panel">
           <div className="d-flex flex-column gap-4">
             <div>
-              <h2 className="section-title">Add Team Member</h2>
-              <p className="section-copy">Create an account for a new member in your company.</p>
+              <h2 className="section-title">Add New User</h2>
+              <p className="section-copy">Create a user and assign them to any company.</p>
             </div>
             <div className="maintenance-form-grid">
               <div className="flex flex-column gap-2 input-shell">
@@ -81,6 +92,10 @@ export default function AdminUsersTab({ profile }) {
                 <label className="field-label">Email</label>
                 <InputText value={form.email} onChange={e => upd('email', e.target.value)} placeholder="name@company.com" className="w-full" />
               </div>
+              <div className="flex flex-column gap-2 input-shell">
+                <label className="field-label">Company</label>
+                <Dropdown value={form.company_id} onChange={e => upd('company_id', e.value)} options={companies} optionLabel="name" optionValue="id" placeholder="Select company" className="w-full" showClear />
+              </div>
               <div className="flex flex-column gap-2 input-shell maintenance-form-span-2">
                 <label className="field-label">Temporary Password</label>
                 <Password value={form.password} onChange={e => upd('password', e.target.value)} feedback={false} toggleMask className="w-full" inputClassName="w-full" style={{ width: '100%' }} />
@@ -93,13 +108,15 @@ export default function AdminUsersTab({ profile }) {
         <Card className="glass-card logs-card table-panel">
           <div className="table-header">
             <div className="table-header-copy">
-              <h2 className="section-title">Team Members</h2>
-              <p className="text-muted-soft">Users assigned to your company.</p>
+              <h2 className="section-title">All Users</h2>
+              <p className="text-muted-soft">Every user across all companies on the platform.</p>
             </div>
+            <InputText value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…" style={{ maxWidth: '200px' }} />
           </div>
-          <DataTable value={companyProfiles} loading={loading} className="entries-table" scrollable scrollHeight="420px" stripedRows emptyMessage="No users found" size="small">
+          <DataTable value={filtered} loading={loading} className="entries-table" scrollable scrollHeight="460px" stripedRows emptyMessage="No users found" size="small">
             <Column field="full_name" header="Name" body={r => r.full_name || '—'} />
             <Column field="email" header="Email" />
+            <Column header="Company" body={companyBody} />
             <Column header="Roles" body={rolesBody} />
             <Column header="Last Login" body={r => r.last_login_at ? new Date(r.last_login_at).toLocaleDateString() : 'Never'} />
           </DataTable>

@@ -1,41 +1,38 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
-export function useCompanySettings() {
+export function useCompanySettings(companyId) {
   const [settings, setSettings] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    supabase
-      .from('company_settings')
-      .select('*')
-      .eq('id', 1)
-      .single()
-      .then(({ data }) => {
-        setSettings(data)
-        setLoading(false)
-      })
-  }, [])
+  const fetchSettings = useCallback(async () => {
+    if (!companyId) { setLoading(false); return }
+    setLoading(true)
+    const { data } = await supabase.from('companies').select('*').eq('id', companyId).single()
+    setSettings(data)
+    setLoading(false)
+  }, [companyId])
 
-  async function saveSettings(payload, userId) {
+  useEffect(() => { fetchSettings() }, [fetchSettings])
+
+  async function saveSettings(payload) {
+    if (!companyId) return { error: { message: 'No company assigned.' } }
     setSaving(true)
-    const nextPayload = {
-      id: 1,
-      company_name: payload.company_name || null,
-      company_address: payload.company_address || null,
-      latitude: payload.latitude ?? null,
-      longitude: payload.longitude ?? null,
-      radius_meters: payload.radius_meters ?? 100,
-      updated_at: new Date().toISOString(),
-      updated_by: userId
-    }
-
     const { error } = await supabase
-      .from('company_settings')
-      .upsert(nextPayload)
-
-    if (!error) setSettings(nextPayload)
+      .from('companies')
+      .update({
+        name: payload.company_name || payload.name,
+        address: payload.company_address || payload.address || null,
+        latitude: payload.latitude ?? null,
+        longitude: payload.longitude ?? null,
+        radius_meters: payload.radius_meters ?? 100,
+        working_days: payload.working_days ?? null,
+        shift_start: payload.shift_start ?? null,
+        shift_end: payload.shift_end ?? null,
+      })
+      .eq('id', companyId)
+    if (!error) await fetchSettings()
     setSaving(false)
     return { error }
   }

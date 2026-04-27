@@ -28,7 +28,7 @@ export function useAuth() {
   async function fetchProfile(userId) {
     const { data } = await supabase
       .from('profiles')
-      .select('*')
+      .select('*, company:companies(id, name)')
       .eq('id', userId)
       .single()
     setProfile(data)
@@ -49,13 +49,18 @@ export function useAuth() {
   }
 
   async function logout() {
-    try {
-      await supabase.auth.signOut()
-    } finally {
-      setSession(null)
-      setProfile(null)
-    }
+    try { await supabase.auth.signOut() }
+    finally { setSession(null); setProfile(null) }
   }
 
-  return { session, profile, loading, login, logout }
+  async function changePassword(password) {
+    const { error } = await supabase.auth.updateUser({ password })
+    if (!error && profile) {
+      await supabase.from('profiles').update({ must_change_password: false }).eq('id', profile.id)
+      setProfile(p => ({ ...p, must_change_password: false }))
+    }
+    return { error }
+  }
+
+  return { session, profile, loading, login, logout, changePassword }
 }

@@ -18,8 +18,8 @@ const PRESETS = [
   { label: 'All', value: 'all' }
 ]
 
-export default function AdminLogsTab() {
-  const { entries, loading, refetch } = useAllTimeEntries()
+export default function AdminLogsTab({ companyId }) {
+  const { entries, loading, refetch } = useAllTimeEntries(companyId)
   const [preset, setPreset] = useState('all')
   const [customRange, setCustomRange] = useState(null)
 
