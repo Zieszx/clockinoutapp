@@ -3,11 +3,13 @@ import { Button } from 'primereact/button'
 import { InputSwitch } from 'primereact/inputswitch'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleTheme } from '../store/themeSlice'
+import { useInstallPrompt } from '../hooks/useInstallPrompt'
 
 export default function AppTopbar({ email, roleLabel, subtitle, onLogout }) {
   const dispatch = useDispatch()
   const mode = useSelector(state => state.theme.mode)
   const initials = email?.slice(0, 2).toUpperCase() || 'CU'
+  const { canInstall, install, isIOS, isStandalone } = useInstallPrompt()
 
   const start = (
     <div className="d-flex align-items-center gap-3">
@@ -40,6 +42,14 @@ export default function AppTopbar({ email, roleLabel, subtitle, onLogout }) {
           <span>{roleLabel || 'Employee access'}</span>
         </span>
       </div>
+      {!isStandalone && canInstall && (
+        <Button label="Install App" icon="pi pi-download" size="small" outlined onClick={install} className="soft-btn" />
+      )}
+      {!isStandalone && isIOS && (
+        <span className="install-hint d-none d-md-inline-flex">
+          <i className="pi pi-upload" /> Share → Add to Home Screen
+        </span>
+      )}
       <Button label="Sign Out" icon="pi pi-sign-out" size="small" text onClick={onLogout} className="soft-btn" />
     </div>
   )

@@ -819,6 +819,16 @@ a {
   background: linear-gradient(135deg, var(--app-accent), var(--app-success));
 }
 
+.install-hint {
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--app-text-soft);
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--app-border);
+}
+
 .primary-btn.p-button {
   border-radius: 1rem !important;
   background: linear-gradient(135deg, #38bdf8 0%, #14b8a6 100%) !important;
