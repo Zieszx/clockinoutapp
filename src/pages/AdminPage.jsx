@@ -8,12 +8,14 @@ import TimeEntriesTable from '../components/TimeEntriesTable'
 import LiveClock from '../components/LiveClock'
 import AdminLogsTab from '../components/AdminLogsTab'
 import MaintenanceTab from '../components/MaintenanceTab'
+import AdminUsersTab from '../components/AdminUsersTab'
 import AppTopbar from '../components/AppTopbar'
 import { calcDuration } from '../utils/duration'
 
 const TABS = [
   { label: 'My Clock', icon: 'pi pi-clock' },
   { label: 'Logs', icon: 'pi pi-list' },
+  { label: 'Users', icon: 'pi pi-users' },
   { label: 'Maintenance', icon: 'pi pi-cog' }
 ]
 
@@ -120,7 +122,8 @@ export default function AdminPage({ session, profile, onLogout }) {
         )}
 
         {activeTab === 1 && <AdminLogsTab />}
-        {activeTab === 2 && <MaintenanceTab session={session} />}
+        {activeTab === 2 && <AdminUsersTab />}
+        {activeTab === 3 && <MaintenanceTab session={session} />}
       </div>
     </div>
   )

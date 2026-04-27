@@ -23,6 +23,27 @@
   --app-shadow: 0 24px 80px rgba(2, 6, 23, 0.45);
 }
 
+:root[data-theme='light'] {
+  color-scheme: light;
+  --app-bg: #eff5fb;
+  --app-bg-soft: #dfeaf6;
+  --app-panel: rgba(255, 255, 255, 0.86);
+  --app-panel-strong: rgba(255, 255, 255, 0.98);
+  --app-panel-muted: rgba(15, 23, 42, 0.04);
+  --app-border: rgba(15, 23, 42, 0.1);
+  --app-border-strong: rgba(14, 165, 233, 0.18);
+  --app-text: #16304a;
+  --app-text-soft: #5f7389;
+  --app-heading: #10243a;
+  --app-accent: #0284c7;
+  --app-accent-strong: #0369a1;
+  --app-accent-deep: #0f766e;
+  --app-success: #059669;
+  --app-warning: #d97706;
+  --app-danger: #e11d48;
+  --app-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+}
+
 html,
 body,
 #root {
@@ -36,7 +57,7 @@ body {
   background:
     radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 28%),
     radial-gradient(circle at top right, rgba(52, 211, 153, 0.12), transparent 24%),
-    linear-gradient(180deg, #07111f 0%, #081423 45%, #09111d 100%);
+    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-soft) 45%, var(--app-bg) 100%);
   background-attachment: fixed;
 }
 
@@ -578,6 +599,16 @@ a {
   gap: 1.5rem;
 }
 
+.maintenance-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.maintenance-form-span-2 {
+  grid-column: span 2;
+}
+
 .setting-highlight {
   padding: 1rem 1.1rem;
   border-radius: 1rem;
@@ -740,7 +771,9 @@ a {
 .input-shell .p-inputtext,
 .input-shell .p-password-input,
 .input-shell .p-inputnumber-input,
-.input-shell .p-calendar .p-inputtext {
+.input-shell .p-calendar .p-inputtext,
+.input-shell .p-inputtextarea,
+.input-shell .p-dropdown {
   border-radius: 1rem !important;
   border-color: rgba(148, 163, 184, 0.18) !important;
   background: rgba(255, 255, 255, 0.04) !important;
@@ -748,12 +781,42 @@ a {
   box-shadow: none !important;
 }
 
+.input-shell .p-dropdown .p-dropdown-label,
+.input-shell .p-dropdown .p-dropdown-trigger,
+.input-shell .p-inputtextarea {
+  color: var(--app-text) !important;
+}
+
 .input-shell .p-inputtext:enabled:focus,
 .input-shell .p-password-input:enabled:focus,
 .input-shell .p-inputnumber-input:enabled:focus,
-.input-shell .p-calendar .p-inputtext:enabled:focus {
+.input-shell .p-calendar .p-inputtext:enabled:focus,
+.input-shell .p-inputtextarea:enabled:focus {
   border-color: rgba(125, 211, 252, 0.42) !important;
   box-shadow: 0 0 0 0.18rem rgba(56, 189, 248, 0.12) !important;
+}
+
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--app-border);
+  color: var(--app-text-soft);
+}
+
+.theme-switch .p-inputswitch {
+  height: 1.4rem;
+}
+
+.theme-switch .p-inputswitch .p-inputswitch-slider {
+  background: rgba(148, 163, 184, 0.28);
+}
+
+.theme-switch .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+  background: linear-gradient(135deg, var(--app-accent), var(--app-success));
 }
 
 .primary-btn.p-button {
@@ -794,6 +857,53 @@ a {
   color: var(--app-text-soft);
 }
 
+:root[data-theme='light'] body {
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 24%),
+    linear-gradient(180deg, #eff5fb 0%, #dfeaf6 45%, #eff5fb 100%);
+}
+
+:root[data-theme='light'] .app-menubar {
+  background: rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 10px 36px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme='light'] .glass-card,
+:root[data-theme='light'] .login-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 255, 0.96)) !important;
+}
+
+:root[data-theme='light'] .hero-banner {
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.14), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(241, 247, 253, 0.98)) !important;
+}
+
+:root[data-theme='light'] .clock-spotlight,
+:root[data-theme='light'] .metric-card,
+:root[data-theme='light'] .status-tile,
+:root[data-theme='light'] .summary-pill,
+:root[data-theme='light'] .showcase-tile,
+:root[data-theme='light'] .user-chip,
+:root[data-theme='light'] .theme-switch {
+  background: rgba(15, 23, 42, 0.03);
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme='light'] .entries-table .p-datatable-thead > tr > th {
+  background: rgba(2, 132, 199, 0.08) !important;
+  color: var(--app-heading) !important;
+}
+
+:root[data-theme='light'] .entries-table .p-datatable-tbody > tr {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+:root[data-theme='light'] .entries-table .p-datatable-tbody > tr:hover {
+  background: rgba(2, 132, 199, 0.05) !important;
+}
+
 @media (max-width: 1100px) {
   .hero-grid,
   .content-grid,
@@ -808,8 +918,13 @@ a {
 
   .showcase-grid,
   .hero-meta,
-  .summary-grid {
+  .summary-grid,
+  .maintenance-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .maintenance-form-span-2 {
+    grid-column: span 1;
   }
 }
 
