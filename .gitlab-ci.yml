@@ -1,0 +1,63 @@
+stages:
+  - quality
+  - build
+  - deploy
+
+default:
+  image: node:20-alpine
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+
+lint:
+  stage: quality
+  before_script:
+    - npm ci --legacy-peer-deps
+  script:
+    - npm run lint
+
+build:
+  stage: build
+  only:
+    - main
+  before_script:
+    - npm ci --legacy-peer-deps
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+
+pages:
+  stage: deploy
+  only:
+    - main
+  needs:
+    - build
+  before_script:
+    - npm ci --legacy-peer-deps
+  script:
+    - npm run build:pages
+    - cp -r dist public
+  artifacts:
+    paths:
+      - public
+
+deploy-vercel:
+  stage: deploy
+  only:
+    - main
+  needs:
+    - build
+  before_script:
+    - npm install -g vercel
+    - npm ci --legacy-peer-deps
+  script:
+    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+    - vercel build --prod --token=$VERCEL_TOKEN
+    - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+  variables:
+    VERCEL_ORG_ID: $VERCEL_ORG_ID
+    VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
