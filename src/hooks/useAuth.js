@@ -16,7 +16,10 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       if (session) fetchProfile(session.user.id)
-      else { setProfile(null); setLoading(false) }
+      else {
+        setProfile(null)
+        setLoading(false)
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -33,7 +36,15 @@ export function useAuth() {
   }
 
   async function login(email, password) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (!error && data?.user) {
+      await supabase
+        .from('profiles')
+        .update({ last_login_at: new Date().toISOString() })
+        .eq('id', data.user.id)
+    }
+
     return { error }
   }
 

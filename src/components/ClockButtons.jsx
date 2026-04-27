@@ -29,17 +29,16 @@ export default function ClockButtons({ openEntry, loading, onClockIn, onClockOut
       <Toast ref={toast} />
       <div className="flex flex-column align-items-center gap-3">
         {openEntry && (
-          <Tag severity="success" icon="pi pi-circle-fill" value="Session Active" className="text-sm" />
+          <Tag severity="success" icon="pi pi-circle-fill" value="Session Active" className="text-sm session-pill" />
         )}
-        <div className="flex gap-3 flex-wrap justify-content-center">
+        <div className="clock-button-grid">
           <Button
             label="Clock In"
             icon="pi pi-play-circle"
             size="large"
             disabled={!!openEntry || loading}
             onClick={handleClockIn}
-            className="clock-in-btn px-5 py-3"
-            style={{ minWidth: '160px' }}
+            className="clock-in-btn clock-action"
           />
           <Button
             label="Clock Out"
@@ -48,8 +47,7 @@ export default function ClockButtons({ openEntry, loading, onClockIn, onClockOut
             severity="danger"
             disabled={!openEntry || loading}
             onClick={handleClockOut}
-            className="clock-out-btn px-5 py-3"
-            style={{ minWidth: '160px' }}
+            className="clock-out-btn clock-action"
           />
         </div>
       </div>

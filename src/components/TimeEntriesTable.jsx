@@ -13,6 +13,7 @@ export default function TimeEntriesTable({ entries, loading }) {
     <DataTable
       value={entries}
       loading={loading}
+      className="entries-table"
       scrollable
       scrollHeight="400px"
       stripedRows

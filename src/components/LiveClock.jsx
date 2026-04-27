@@ -9,14 +9,12 @@ export default function LiveClock() {
   }, [])
 
   return (
-    <div className="text-center">
-      <div
-        className="text-5xl font-bold mb-1"
-        style={{ color: '#a5b4fc', fontVariantNumeric: 'tabular-nums' }}
-      >
+    <div className="live-clock-wrap">
+      <div className="live-clock-zone">Live attendance clock</div>
+      <div className="live-clock-time">
         {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
       </div>
-      <div className="text-color-secondary text-sm">
+      <div className="live-clock-date">
         {now.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
     </div>
