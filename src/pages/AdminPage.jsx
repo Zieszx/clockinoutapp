@@ -84,6 +84,7 @@ export default function AdminPage({ session, profile, onLogout }) {
 
             <div className="clock-spotlight">
               <LiveClock />
+              <ClockButtons openEntry={openEntry} loading={loading} onClockIn={clockIn} onClockOut={clockOut} />
               <div className="d-flex flex-wrap gap-2">
                 <Tag severity={openEntry ? 'success' : 'info'} value={openEntry ? 'Session running' : 'No active session'} rounded />
                 {profile?.company?.name ? <Tag severity="contrast" value={profile.company.name} rounded /> : null}
@@ -99,16 +100,6 @@ export default function AdminPage({ session, profile, onLogout }) {
             {activeKey === 'my-clock' && (
               <div className="content-grid">
                 <div className="sidebar-stack">
-                  <Card className="glass-card clock-card status-panel">
-                    <div className="d-flex flex-column gap-4">
-                      <div>
-                        <h2 className="section-title">My shift controls</h2>
-                        <p className="section-copy">Manage your own attendance alongside your admin duties.</p>
-                      </div>
-                      <ClockButtons openEntry={openEntry} loading={loading} onClockIn={clockIn} onClockOut={clockOut} />
-                    </div>
-                  </Card>
-
                   <Card className="glass-card status-panel">
                     <div className="d-flex flex-column gap-3">
                       <h2 className="section-title">Quick view</h2>
