@@ -204,10 +204,21 @@ create policy "leaves_delete_own" on public.leaves
 
 -- ── 12. Rebuild profile for existing auth users ──────────────
 -- Ensures existing Supabase Auth accounts get a profiles row.
+-- ON CONFLICT updates ALL rebuilt fields so the trigger can't win the race.
 
 insert into public.profiles (id, email, roles, must_change_password)
 select id, email, '{super_admin,admin,employee}', false
 from auth.users
 on conflict (id) do update
-  set email = excluded.email,
-      roles = excluded.roles;
+  set email                = excluded.email,
+      roles                = excluded.roles,
+      must_change_password = excluded.must_change_password;
+
+-- ── 13. Safety net: fix any profile whose roles got reset to {employee} ──
+-- Runs after the insert so even if the trigger fired during step 12,
+-- the super_admin roles are restored.
+
+update public.profiles
+set roles = '{super_admin,admin,employee}'::text[]
+where roles = '{employee}'
+  and id in (select id from auth.users);
