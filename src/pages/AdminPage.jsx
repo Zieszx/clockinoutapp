@@ -15,6 +15,7 @@ import LeaveTab from '../components/LeaveTab';
 import ProfileTab from '../components/ProfileTab';
 import AppTopbar from '../components/AppTopbar';
 import AppSidebar from '../components/AppSidebar';
+import InstallPromptBanner from '../components/InstallPromptBanner';
 import { calcDuration } from '../utils/duration';
 import { exportToXLSX } from '../utils/export';
 
@@ -54,6 +55,8 @@ export default function AdminPage({ session, profile, onLogout }) {
       <AppTopbar email={session.user.email} roleLabel={roleLabel} subtitle="Operations console" onLogout={onLogout} />
 
       <div className="surface-container content-stack">
+        <InstallPromptBanner />
+
         <Card className="glass-card hero-banner">
           <div className="hero-grid">
             <div className="hero-copy">

@@ -4,6 +4,7 @@ import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
 import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
+import InstallPromptBanner from '../components/InstallPromptBanner'
 
 export default function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('')
@@ -60,51 +61,55 @@ export default function LoginPage({ onLogin }) {
         </section>
 
         <section className="login-panel">
-          <Card className="login-card">
-            <div className="login-heading">
-              <span className="brand-mark">
-                <i className="pi pi-clock text-2xl" />
-              </span>
-              <h2>Welcome back</h2>
-              <p>Sign in to access your live attendance controls, time logs, and company workspace.</p>
-            </div>
+          <div className="login-panel-stack">
+            <InstallPromptBanner />
 
-            <form onSubmit={handleSubmit} className="flex flex-column gap-4">
-              <div className="flex flex-column gap-2 input-shell">
-                <label className="field-label">Email</label>
-                <InputText
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="name@company.com"
-                  type="email"
-                  required
-                  className="w-full"
-                />
+            <Card className="login-card">
+              <div className="login-heading">
+                <span className="brand-mark">
+                  <i className="pi pi-clock text-2xl" />
+                </span>
+                <h2>Welcome back</h2>
+                <p>Sign in to access your live attendance controls, time logs, and company workspace.</p>
               </div>
 
-              <div className="flex flex-column gap-2 input-shell">
-                <label className="field-label">Password</label>
-                <Password
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  feedback={false}
-                  toggleMask
-                  required
-                  className="w-full"
-                  inputClassName="w-full"
-                />
-              </div>
+              <form onSubmit={handleSubmit} className="flex flex-column gap-4">
+                <div className="flex flex-column gap-2 input-shell">
+                  <label className="field-label">Email</label>
+                  <InputText
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="name@company.com"
+                    type="email"
+                    required
+                    className="w-full"
+                  />
+                </div>
 
-              <Button
-                type="submit"
-                label="Sign In"
-                icon="pi pi-arrow-right"
-                loading={loading}
-                className="w-full mt-2 primary-btn"
-              />
-            </form>
-          </Card>
+                <div className="flex flex-column gap-2 input-shell">
+                  <label className="field-label">Password</label>
+                  <Password
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    feedback={false}
+                    toggleMask
+                    required
+                    className="w-full"
+                    inputClassName="w-full"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  label="Sign In"
+                  icon="pi pi-arrow-right"
+                  loading={loading}
+                  className="w-full mt-2 primary-btn"
+                />
+              </form>
+            </Card>
+          </div>
         </section>
       </div>
     </div>

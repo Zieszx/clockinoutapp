@@ -743,6 +743,14 @@ a {
   justify-content: center;
 }
 
+.login-panel-stack {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .login-card {
   width: 100%;
   max-width: 460px;
@@ -937,6 +945,84 @@ a {
   border: 1px solid var(--app-border);
 }
 
+.install-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1.15rem;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(20, 184, 166, 0.09));
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.install-banner-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.install-banner-kicker {
+  color: var(--app-accent);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.install-banner-copy strong {
+  color: var(--app-heading);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.install-banner-copy span:last-child {
+  color: var(--app-text-soft);
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+
+.install-banner-btn.p-button {
+  min-width: 124px;
+  flex-shrink: 0;
+}
+
+.install-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.install-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.install-step span {
+  width: 1.7rem;
+  height: 1.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.14);
+  color: var(--app-heading);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.install-step strong {
+  color: var(--app-heading);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .primary-btn.p-button {
   border-radius: 1rem !important;
   background: linear-gradient(135deg, #38bdf8 0%, #14b8a6 100%) !important;
@@ -1004,9 +1090,15 @@ a {
 :root[data-theme='light'] .summary-pill,
 :root[data-theme='light'] .showcase-tile,
 :root[data-theme='light'] .user-chip,
-:root[data-theme='light'] .theme-switch {
+:root[data-theme='light'] .theme-switch,
+:root[data-theme='light'] .install-step {
   background: rgba(15, 23, 42, 0.03);
   border-color: rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme='light'] .install-banner {
+  background: linear-gradient(135deg, rgba(186, 230, 253, 0.74), rgba(204, 251, 241, 0.78));
+  border-color: rgba(2, 132, 199, 0.14);
 }
 
 :root[data-theme='light'] .entries-table .p-datatable-thead > tr > th {
@@ -1066,6 +1158,11 @@ a {
   .clock-button-grid,
   .showcase-grid {
     grid-template-columns: 1fr;
+  }
+
+  .install-banner {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .table-header,

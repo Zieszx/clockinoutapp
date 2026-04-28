@@ -7,6 +7,11 @@ export function useInstallPrompt() {
   useEffect(() => {
     const onPrompt = e => { e.preventDefault(); setPrompt(e) }
     const onInstalled = () => setInstalled(true)
+
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      setInstalled(true)
+    }
+
     window.addEventListener('beforeinstallprompt', onPrompt)
     window.addEventListener('appinstalled', onInstalled)
     return () => {
@@ -24,7 +29,7 @@ export function useInstallPrompt() {
   }
 
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone
 
   return { canInstall: !!prompt && !installed, install, isIOS, isStandalone }
 }

@@ -8,6 +8,7 @@ import TimeEntriesTable from '../components/TimeEntriesTable'
 import LiveClock from '../components/LiveClock'
 import AppTopbar from '../components/AppTopbar'
 import AppSidebar from '../components/AppSidebar'
+import InstallPromptBanner from '../components/InstallPromptBanner'
 import LeaveTab from '../components/LeaveTab'
 import ProfileTab from '../components/ProfileTab'
 import { calcDuration } from '../utils/duration'
@@ -35,6 +36,8 @@ export default function DashboardPage({ session, profile, onLogout }) {
       <AppTopbar email={session.user.email} subtitle="Attendance workspace" onLogout={onLogout} />
 
       <div className="surface-container content-stack">
+        <InstallPromptBanner />
+
         <Card className="glass-card hero-banner">
           <div className="hero-grid">
             <div className="hero-copy">
