@@ -10,6 +10,7 @@ import { MultiSelect } from 'primereact/multiselect'
 import { Toast } from 'primereact/toast'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { useCompanies } from '../hooks/useCompanies'
+import LocationPicker from './LocationPicker'
 
 const WEEKDAYS = [
   { label: 'Mon', value: 1 }, { label: 'Tue', value: 2 }, { label: 'Wed', value: 3 },
@@ -30,16 +31,19 @@ export default function CompaniesTab({ session }) {
   const [searchResults, setSearchResults] = useState([])
   const [searching, setSearching] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [mapFlyTo, setMapFlyTo] = useState(null)
   const toast = useRef(null)
 
   function upd(key, val) { setForm(f => ({ ...f, [key]: val })) }
 
-  function openNew() { setForm(EMPTY); setSearchQuery(''); setSearchResults([]); setSearched(false); setShowDialog(true) }
+  function openNew() { setForm(EMPTY); setSearchQuery(''); setSearchResults([]); setSearched(false); setMapFlyTo(null); setShowDialog(true) }
   function openEdit(c) {
     setForm({ id: c.id, name: c.name, address: c.address || '', latitude: c.latitude, longitude: c.longitude,
       radius_meters: c.radius_meters, working_days: c.working_days || [1,2,3,4,5],
       shift_start: c.shift_start || '09:00', shift_end: c.shift_end || '18:00' })
-    setSearchQuery(''); setSearchResults([]); setSearched(false); setShowDialog(true)
+    setSearchQuery(''); setSearchResults([]); setSearched(false)
+    setMapFlyTo(c.latitude && c.longitude ? { lat: c.latitude, lng: c.longitude } : null)
+    setShowDialog(true)
   }
 
   async function handleSearch() {
@@ -61,12 +65,30 @@ export default function CompaniesTab({ session }) {
   }
 
   function selectLocation(r) {
+    const lat = parseFloat(r.lat)
+    const lng = parseFloat(r.lon)
     upd('address', r.display_name)
-    upd('latitude', parseFloat(r.lat))
-    upd('longitude', parseFloat(r.lon))
+    upd('latitude', lat)
+    upd('longitude', lng)
     setSearchResults([])
     setSearched(false)
     setSearchQuery('')
+    setMapFlyTo({ lat, lng })
+  }
+
+  async function handleMapPick(lat, lng) {
+    upd('latitude', lat)
+    upd('longitude', lng)
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+        { headers: { 'Accept-Language': 'en', 'User-Agent': 'ClockApp/1.0' } }
+      )
+      const data = await res.json()
+      if (data?.display_name) upd('address', data.display_name)
+    } catch {
+      // reverse geocode failed — lat/lng still set, address left as-is
+    }
   }
 
   async function handleSave() {
@@ -165,6 +187,10 @@ export default function CompaniesTab({ session }) {
                 {form.latitude && <p className="text-sm mt-1" style={{ color: 'var(--app-text-soft)', margin: '0.25rem 0 0' }}>{parseFloat(form.latitude).toFixed(5)}, {parseFloat(form.longitude).toFixed(5)}</p>}
               </div>
             )}
+            <div style={{ marginTop: '0.5rem' }}>
+              <p className="field-label" style={{ marginBottom: '0.4rem' }}>Or click the map to pin a location</p>
+              <LocationPicker lat={form.latitude} lng={form.longitude} flyTo={mapFlyTo} onPick={handleMapPick} />
+            </div>
           </div>
 
           <div className="maintenance-form-grid">

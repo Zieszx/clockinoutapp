@@ -22,6 +22,8 @@ export default function AdminLogsTab({ companyId }) {
   const { entries, loading, refetch } = useAllTimeEntries(companyId)
   const [preset, setPreset] = useState('all')
   const [customRange, setCustomRange] = useState(null)
+  const uniqueEmployees = new Set(entries.map(row => row.user_id)).size
+  const activeSessions = entries.filter(row => !row.clock_out).length
 
   function handlePresetChange(value) {
     if (!value) return
@@ -44,9 +46,31 @@ export default function AdminLogsTab({ companyId }) {
   }
 
   return (
-    <Card className="logs-card">
-      <div className="flex flex-column md:flex-row gap-3 mb-4 align-items-start md:align-items-center justify-content-between flex-wrap">
-        <div className="flex flex-column md:flex-row gap-3 align-items-start md:align-items-center flex-wrap">
+    <Card className="glass-card logs-card table-panel">
+      <div className="table-header">
+        <div className="table-header-copy">
+          <h2 className="section-title">Team attendance logs</h2>
+          <p className="text-muted-soft">Review attendance across your company with export-ready filters and clearer mobile views.</p>
+        </div>
+      </div>
+
+      <div className="summary-grid">
+        <div className="summary-pill">
+          <span className="label">Employees</span>
+          <span className="value">{uniqueEmployees}</span>
+        </div>
+        <div className="summary-pill">
+          <span className="label">Entries</span>
+          <span className="value">{entries.length}</span>
+        </div>
+        <div className="summary-pill">
+          <span className="label">Active Sessions</span>
+          <span className="value">{activeSessions}</span>
+        </div>
+      </div>
+
+      <div className="logs-filter-bar">
+        <div className="logs-filter-group input-shell">
           <SelectButton value={preset} onChange={e => handlePresetChange(e.value)} options={PRESETS} />
           <Calendar
             value={customRange}
@@ -67,22 +91,60 @@ export default function AdminLogsTab({ companyId }) {
           disabled={entries.length === 0}
         />
       </div>
-      <DataTable
-        value={entries}
-        loading={loading}
-        scrollable
-        scrollHeight="420px"
-        stripedRows
-        emptyMessage="No records found"
-        size="small"
-      >
-        <Column field="full_name" header="Name" body={row => row.full_name || '—'} />
-        <Column field="email" header="Email" />
-        <Column header="Date" body={row => formatDate(row.clock_in)} />
-        <Column header="Clock In" body={row => formatTime(row.clock_in)} />
-        <Column header="Clock Out" body={row => formatTime(row.clock_out)} />
-        <Column header="Duration" body={durationBody} />
-      </DataTable>
+
+      <div className="desktop-table">
+        <DataTable
+          value={entries}
+          loading={loading}
+          className="entries-table"
+          scrollable
+          scrollHeight="420px"
+          stripedRows
+          emptyMessage="No records found"
+          size="small"
+        >
+          <Column field="full_name" header="Name" body={row => row.full_name || '—'} />
+          <Column field="email" header="Email" />
+          <Column header="Date" body={row => formatDate(row.clock_in)} />
+          <Column header="Clock In" body={row => formatTime(row.clock_in)} />
+          <Column header="Clock Out" body={row => formatTime(row.clock_out)} />
+          <Column header="Duration" body={durationBody} />
+        </DataTable>
+      </div>
+
+      <div className="mobile-records">
+        {loading ? (
+          <div className="mobile-empty-state">Loading records...</div>
+        ) : entries.length === 0 ? (
+          <div className="mobile-empty-state">No records found</div>
+        ) : (
+          entries.map(entry => (
+            <article key={entry.id} className="mobile-record-card">
+              <div className="mobile-record-head">
+                <div>
+                  <div className="mobile-record-title">{entry.full_name || '—'}</div>
+                  <div className="mobile-record-subtitle">{entry.email}</div>
+                </div>
+                <div className="mobile-record-tag">{durationBody(entry)}</div>
+              </div>
+              <div className="mobile-record-grid">
+                <div className="mobile-record-cell">
+                  <span>Date</span>
+                  <strong>{formatDate(entry.clock_in)}</strong>
+                </div>
+                <div className="mobile-record-cell">
+                  <span>Clock In</span>
+                  <strong>{formatTime(entry.clock_in)}</strong>
+                </div>
+                <div className="mobile-record-cell">
+                  <span>Clock Out</span>
+                  <strong>{formatTime(entry.clock_out)}</strong>
+                </div>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
     </Card>
   )
 }

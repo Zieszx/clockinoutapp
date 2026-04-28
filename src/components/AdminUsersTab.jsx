@@ -14,7 +14,7 @@ import { useProfiles } from '../hooks/useProfiles'
 
 const ROLE_OPTIONS = [
   { label: 'Admin', value: 'admin' },
-  { label: 'Employee', value: 'employee' },
+  { label: 'Employee', value: 'employee' }
 ]
 
 const EMPTY_FORM = { full_name: '', email: '', password: '', roles: ['employee'] }
@@ -29,7 +29,9 @@ export default function AdminUsersTab({ profile }) {
 
   const companyProfiles = profiles.filter(p => p.company_id === profile?.company_id)
 
-  function upd(key, val) { setForm(f => ({ ...f, [key]: val })) }
+  function upd(key, val) {
+    setForm(f => ({ ...f, [key]: val }))
+  }
 
   function openNew() {
     setEditId(null)
@@ -39,32 +41,54 @@ export default function AdminUsersTab({ profile }) {
 
   function openEdit(row) {
     setEditId(row.id)
-    setForm({ full_name: row.full_name || '', email: row.email || '', password: '', roles: row.roles || ['employee'] })
+    setForm({
+      full_name: row.full_name || '',
+      email: row.email || '',
+      password: '',
+      roles: row.roles || ['employee']
+    })
     setShowDialog(true)
   }
 
   async function handleSave() {
     if (!form.full_name.trim() || !form.email.trim() || (!editId && !form.password.trim())) {
-      toast.current.show({ severity: 'warn', summary: 'Required', detail: editId ? 'Name and email are required.' : 'Name, email, and password are required.', life: 3000 })
+      toast.current.show({
+        severity: 'warn',
+        summary: 'Required',
+        detail: editId ? 'Name and email are required.' : 'Name, email, and password are required.',
+        life: 3000
+      })
       return
     }
+
     setSaving(true)
     try {
       if (editId) {
-        const { error } = await supabase.from('profiles')
+        const { error } = await supabase
+          .from('profiles')
           .update({ full_name: form.full_name.trim(), roles: form.roles })
           .eq('id', editId)
+
         if (error) throw error
         toast.current.show({ severity: 'success', summary: 'Updated', detail: `${form.email} updated.`, life: 3000 })
       } else {
         const { data: s } = await supabase.auth.getSession()
         const { data, error } = await supabase.functions.invoke('admin-create-user', {
-          body: { full_name: form.full_name.trim(), email: form.email.trim(), password: form.password, roles: form.roles, company_id: profile?.company_id },
-          headers: { Authorization: `Bearer ${s.session?.access_token}` }
+          body: {
+            full_name: form.full_name.trim(),
+            email: form.email.trim(),
+            password: form.password,
+            roles: form.roles,
+            company_id: profile?.company_id
+          },
+          headers: {
+            Authorization: `Bearer ${s.session?.access_token}`
+          }
         })
         if (error || data?.error) throw new Error(data?.error || error?.message)
         toast.current.show({ severity: 'success', summary: 'User Created', detail: `${form.email} added.`, life: 4000 })
       }
+
       setShowDialog(false)
       await refetch()
     } catch (err) {
@@ -88,21 +112,69 @@ export default function AdminUsersTab({ profile }) {
   return (
     <>
       <Toast ref={toast} />
-      <Card className="glass-card logs-card">
+      <Card className="glass-card logs-card table-panel">
         <div className="table-header">
           <div className="table-header-copy">
             <h2 className="section-title">Team Members</h2>
-            <p className="text-muted-soft">Users assigned to your company.</p>
+            <p className="text-muted-soft">Users assigned to your company, with cleaner access controls and better mobile readability.</p>
           </div>
           <Button label="New User" icon="pi pi-plus" className="primary-btn" onClick={openNew} />
         </div>
-        <DataTable value={companyProfiles} loading={loading} className="entries-table" scrollable scrollHeight="420px" stripedRows emptyMessage="No users found" size="small">
-          <Column field="full_name" header="Name" body={r => r.full_name || '—'} />
-          <Column field="email" header="Email" />
-          <Column header="Roles" body={rolesBody} />
-          <Column header="Last Login" body={r => r.last_login_at ? new Date(r.last_login_at).toLocaleDateString() : 'Never'} />
-          <Column header="" body={actionBody} style={{ width: '60px' }} />
-        </DataTable>
+
+        <div className="summary-grid">
+          <div className="summary-pill">
+            <span className="label">Members</span>
+            <span className="value">{companyProfiles.length}</span>
+          </div>
+          <div className="summary-pill">
+            <span className="label">Admins</span>
+            <span className="value">{companyProfiles.filter(row => (row.roles || []).includes('admin')).length}</span>
+          </div>
+          <div className="summary-pill">
+            <span className="label">Active Recently</span>
+            <span className="value">{companyProfiles.filter(row => row.last_login_at).length}</span>
+          </div>
+        </div>
+
+        <div className="desktop-table">
+          <DataTable value={companyProfiles} loading={loading} className="entries-table" scrollable scrollHeight="420px" stripedRows emptyMessage="No users found" size="small">
+            <Column field="full_name" header="Name" body={r => r.full_name || '—'} />
+            <Column field="email" header="Email" />
+            <Column header="Roles" body={rolesBody} />
+            <Column header="Last Login" body={r => r.last_login_at ? new Date(r.last_login_at).toLocaleDateString() : 'Never'} />
+            <Column header="" body={actionBody} style={{ width: '60px' }} />
+          </DataTable>
+        </div>
+
+        <div className="mobile-records">
+          {loading ? (
+            <div className="mobile-empty-state">Loading users...</div>
+          ) : companyProfiles.length === 0 ? (
+            <div className="mobile-empty-state">No users found</div>
+          ) : (
+            companyProfiles.map(row => (
+              <article key={row.id} className="mobile-record-card">
+                <div className="mobile-record-head">
+                  <div>
+                    <div className="mobile-record-title">{row.full_name || '—'}</div>
+                    <div className="mobile-record-subtitle">{row.email}</div>
+                  </div>
+                  <Button icon="pi pi-pencil" text size="small" onClick={() => openEdit(row)} />
+                </div>
+                <div className="mobile-record-grid">
+                  <div className="mobile-record-cell">
+                    <span>Roles</span>
+                    <strong>{(row.roles || ['employee']).join(', ')}</strong>
+                  </div>
+                  <div className="mobile-record-cell">
+                    <span>Last Login</span>
+                    <strong>{row.last_login_at ? new Date(row.last_login_at).toLocaleDateString() : 'Never'}</strong>
+                  </div>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
       </Card>
 
       <Dialog
