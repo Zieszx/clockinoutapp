@@ -12,12 +12,12 @@ drop table if exists public.companies       cascade;
 drop table if exists public.company_settings cascade;
 
 -- Drop old helper functions
-drop function if exists public.get_my_roles();
-drop function if exists public.get_my_company_id();
-drop function if exists public.handle_new_user();
+drop function if exists public.get_my_roles() cascade;
+drop function if exists public.get_my_company_id() cascade;
 
--- Drop old trigger (trigger on auth.users must be dropped separately)
+-- Drop old trigger first, then the function it depends on
 drop trigger if exists on_auth_user_created on auth.users;
+drop function if exists public.handle_new_user() cascade;
 
 -- ── 2. Create companies ──────────────────────────────────────
 
