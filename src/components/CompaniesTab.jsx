@@ -29,27 +29,31 @@ export default function CompaniesTab({ session }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [searching, setSearching] = useState(false)
+  const [searched, setSearched] = useState(false)
   const toast = useRef(null)
 
   function upd(key, val) { setForm(f => ({ ...f, [key]: val })) }
 
-  function openNew() { setForm(EMPTY); setSearchQuery(''); setSearchResults([]); setShowDialog(true) }
+  function openNew() { setForm(EMPTY); setSearchQuery(''); setSearchResults([]); setSearched(false); setShowDialog(true) }
   function openEdit(c) {
     setForm({ id: c.id, name: c.name, address: c.address || '', latitude: c.latitude, longitude: c.longitude,
       radius_meters: c.radius_meters, working_days: c.working_days || [1,2,3,4,5],
       shift_start: c.shift_start || '09:00', shift_end: c.shift_end || '18:00' })
-    setSearchQuery(''); setSearchResults([]); setShowDialog(true)
+    setSearchQuery(''); setSearchResults([]); setSearched(false); setShowDialog(true)
   }
 
   async function handleSearch() {
     if (!searchQuery.trim()) return
     setSearching(true)
+    setSearched(false)
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&format=json&limit=5`,
         { headers: { 'Accept-Language': 'en', 'User-Agent': 'ClockApp/1.0' } }
       )
-      setSearchResults(await res.json())
+      const data = await res.json()
+      setSearchResults(data)
+      setSearched(true)
     } catch {
       toast.current.show({ severity: 'error', summary: 'Search failed', detail: 'Could not reach location service.', life: 3000 })
     }
@@ -61,6 +65,7 @@ export default function CompaniesTab({ session }) {
     upd('latitude', parseFloat(r.lat))
     upd('longitude', parseFloat(r.lon))
     setSearchResults([])
+    setSearched(false)
     setSearchQuery('')
   }
 
@@ -130,12 +135,12 @@ export default function CompaniesTab({ session }) {
             <div className="d-flex gap-2">
               <InputText
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={e => { setSearchQuery(e.target.value); setSearched(false) }}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                placeholder="Type office name or address..."
+                placeholder="e.g. Jalan Ampang, Kuala Lumpur"
                 className="flex-1 w-full"
               />
-              <Button onClick={handleSearch} disabled={searching} style={{ minWidth: '44px' }}>
+              <Button type="button" onClick={handleSearch} disabled={searching} style={{ minWidth: '44px' }}>
                 {searching ? <ProgressSpinner style={{ width: '18px', height: '18px' }} /> : <i className="pi pi-search" />}
               </Button>
             </div>
@@ -147,6 +152,11 @@ export default function CompaniesTab({ session }) {
                   </button>
                 ))}
               </div>
+            )}
+            {searched && searchResults.length === 0 && (
+              <p style={{ fontSize: '0.82rem', color: 'var(--app-text-soft)', margin: '0.25rem 0 0' }}>
+                No locations found. Try a street address or landmark.
+              </p>
             )}
             {form.address && (
               <div className="setting-highlight mt-2">

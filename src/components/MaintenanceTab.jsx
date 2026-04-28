@@ -23,6 +23,7 @@ export default function MaintenanceTab({ profile }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [searching, setSearching] = useState(false)
+  const [searched, setSearched] = useState(false)
   const [triggering, setTriggering] = useState(false)
   const toast = useRef(null)
 
@@ -45,12 +46,15 @@ export default function MaintenanceTab({ profile }) {
   async function handleSearch() {
     if (!searchQuery.trim()) return
     setSearching(true)
+    setSearched(false)
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&format=json&limit=5`,
         { headers: { 'Accept-Language': 'en', 'User-Agent': 'ClockApp/1.0' } }
       )
-      setSearchResults(await res.json())
+      const data = await res.json()
+      setSearchResults(data)
+      setSearched(true)
     } catch {
       toast.current.show({ severity: 'error', summary: 'Search failed', detail: 'Could not reach location service.', life: 3000 })
     }
@@ -60,6 +64,7 @@ export default function MaintenanceTab({ profile }) {
   function selectLocation(r) {
     setForm(f => ({ ...f, address: r.display_name, latitude: parseFloat(r.lat), longitude: parseFloat(r.lon) }))
     setSearchResults([])
+    setSearched(false)
     setSearchQuery('')
   }
 
@@ -130,12 +135,12 @@ export default function MaintenanceTab({ profile }) {
               <div className="d-flex gap-2">
                 <InputText
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={e => { setSearchQuery(e.target.value); setSearched(false) }}
                   onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                  placeholder="Type office name or address..."
+                  placeholder="e.g. Jalan Ampang, Kuala Lumpur"
                   className="flex-1 w-full"
                 />
-                <Button onClick={handleSearch} disabled={searching} style={{ minWidth: '44px' }}>
+                <Button type="button" onClick={handleSearch} disabled={searching} style={{ minWidth: '44px' }}>
                   {searching ? <ProgressSpinner style={{ width: '18px', height: '18px' }} /> : <i className="pi pi-search" />}
                 </Button>
               </div>
@@ -147,6 +152,11 @@ export default function MaintenanceTab({ profile }) {
                     </button>
                   ))}
                 </div>
+              )}
+              {searched && searchResults.length === 0 && (
+                <p style={{ fontSize: '0.82rem', color: 'var(--app-text-soft)', margin: '0.25rem 0 0' }}>
+                  No locations found. Try a street address or landmark.
+                </p>
               )}
               {form.address && (
                 <div className="setting-highlight mt-2">
