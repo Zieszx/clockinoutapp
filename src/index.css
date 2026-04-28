@@ -986,7 +986,7 @@ a {
   width: 210px;
   min-width: 180px;
   flex-shrink: 0;
-  background: var(--app-surface);
+  background: var(--app-panel-strong);
   border: 1px solid var(--app-border);
   border-radius: 1rem;
   padding: 0.5rem;
@@ -1074,7 +1074,7 @@ a {
   border: 1px solid var(--app-border);
   border-radius: 0.6rem;
   overflow: hidden;
-  background: var(--app-surface);
+  background: var(--app-panel-strong);
   box-shadow: 0 4px 16px rgba(0,0,0,0.18);
 }
 
@@ -1101,19 +1101,38 @@ a {
 }
 
 /* PrimeReact Dialog glass style */
+.p-dialog-mask {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(2px);
+}
+
+.p-dialog {
+  border: 1px solid var(--app-border) !important;
+  border-radius: 1rem !important;
+  overflow: hidden;
+  box-shadow: var(--app-shadow) !important;
+}
+
 .p-dialog .p-dialog-header {
-  background: var(--app-surface) !important;
+  background: var(--app-panel-strong) !important;
   border-bottom: 1px solid var(--app-border) !important;
   color: var(--app-heading) !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.p-dialog .p-dialog-header .p-dialog-title {
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
 }
 
 .p-dialog .p-dialog-content {
-  background: var(--app-surface) !important;
+  background: var(--app-panel-strong) !important;
   color: var(--app-text) !important;
+  padding: 1.25rem 1.5rem !important;
 }
 
 .p-dialog .p-dialog-footer {
-  background: var(--app-surface) !important;
+  background: var(--app-panel-strong) !important;
   border-top: 1px solid var(--app-border) !important;
 }
 
