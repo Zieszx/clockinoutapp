@@ -9,6 +9,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
+        id: '/clockinoutapp/',
         name: 'ClockApp - Time Tracker',
         short_name: 'ClockApp',
         description: 'Office clock-in and clock-out tracker',
@@ -16,8 +17,8 @@ export default defineConfig({
         background_color: '#07111f',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/clockinoutapp/',
-        scope: '/clockinoutapp/',
+        start_url: './',
+        scope: './',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
