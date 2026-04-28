@@ -1036,17 +1036,56 @@ a {
   border-radius: 999px !important;
 }
 
-.hero-install-btn.p-button {
-  justify-content: center;
-  border-radius: 1rem !important;
-  border-color: rgba(125, 211, 252, 0.2) !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  color: var(--app-heading) !important;
+.hero-install-btn {
+  width: 100%;
 }
 
-.hero-install-btn.p-button:hover {
-  background: rgba(125, 211, 252, 0.1) !important;
-  border-color: rgba(125, 211, 252, 0.28) !important;
+.install-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.05rem;
+  border-radius: 1.1rem;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(20, 184, 166, 0.08));
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.install-cta-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.install-cta-kicker {
+  color: var(--app-accent);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.install-cta-copy strong {
+  color: var(--app-heading);
+  font-size: 0.96rem;
+  line-height: 1.4;
+}
+
+.install-cta-copy span:last-child {
+  color: var(--app-text-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.install-cta-btn.p-button {
+  min-width: 144px;
+  flex-shrink: 0;
+}
+
+:root[data-theme='light'] .install-cta {
+  background: linear-gradient(135deg, rgba(186, 230, 253, 0.7), rgba(204, 251, 241, 0.72));
+  border-color: rgba(2, 132, 199, 0.14);
 }
 
 .admin-tabs.p-tabmenu .p-tabmenu-nav {

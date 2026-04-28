@@ -15,7 +15,6 @@ import LeaveTab from '../components/LeaveTab';
 import ProfileTab from '../components/ProfileTab';
 import AppTopbar from '../components/AppTopbar';
 import AppSidebar from '../components/AppSidebar';
-import InstallPromptBanner from '../components/InstallPromptBanner';
 import InstallAppButton from '../components/InstallAppButton';
 import { calcDuration } from '../utils/duration';
 import { exportToXLSX } from '../utils/export';
@@ -56,8 +55,6 @@ export default function AdminPage({ session, profile, onLogout }) {
       <AppTopbar email={session.user.email} roleLabel={roleLabel} subtitle="Operations console" onLogout={onLogout} />
 
       <div className="surface-container content-stack">
-        <InstallPromptBanner />
-
         <Card className="glass-card hero-banner">
           <div className="hero-grid">
             <div className="hero-copy">
@@ -130,14 +127,7 @@ export default function AdminPage({ session, profile, onLogout }) {
                       <h2 className="section-title">My time log</h2>
                       <p className="text-muted-soft">Review your own attendance without leaving the console.</p>
                     </div>
-                    <Button
-                      label="Export XLSX"
-                      icon="pi pi-file-excel"
-                      severity="success"
-                      outlined
-                      onClick={() => exportToXLSX(entries)}
-                      disabled={entries.length === 0}
-                    />
+                    <Button label="Export XLSX" icon="pi pi-file-excel" severity="success" outlined onClick={() => exportToXLSX(entries)} disabled={entries.length === 0} />
                   </div>
                   <TimeEntriesTable entries={entries} loading={loading} />
                 </Card>
@@ -151,14 +141,7 @@ export default function AdminPage({ session, profile, onLogout }) {
                     <h2 className="section-title">My time log</h2>
                     <p className="text-muted-soft">Complete history of your clock-ins and outs.</p>
                   </div>
-                  <Button
-                    label="Export XLSX"
-                    icon="pi pi-file-excel"
-                    severity="success"
-                    outlined
-                    onClick={() => exportToXLSX(entries)}
-                    disabled={entries.length === 0}
-                  />
+                  <Button label="Export XLSX" icon="pi pi-file-excel" severity="success" outlined onClick={() => exportToXLSX(entries)} disabled={entries.length === 0} />
                 </div>
                 <TimeEntriesTable entries={entries} loading={loading} />
               </Card>

@@ -9,13 +9,13 @@ export default function InstallPromptBanner() {
   }
 
   return (
-    <div className="install-banner d-md-none">
-      <div className="install-banner-copy">
-        <span className="install-banner-kicker">Install App</span>
-        <strong>Save ClockApp to your phone for faster access.</strong>
-        <span>{canInstall ? 'Add it to your home screen and open it like a native app.' : 'Use Safari share options to add it to your home screen.'}</span>
-      </div>
-      <InstallAppButton className="primary-btn install-banner-btn" label="Install" />
+      <div className="install-banner d-md-none">
+        <div className="install-banner-copy">
+          <span className="install-banner-kicker">Install App</span>
+          <strong>Save ClockApp to your phone for faster access.</strong>
+          <span>{canInstall ? 'Add it to your home screen and open it like a native app.' : 'Use Safari share options to add it to your home screen.'}</span>
+        </div>
+      <InstallAppButton className="primary-btn install-banner-btn" label="Install" variant="button" />
     </div>
   )
 }

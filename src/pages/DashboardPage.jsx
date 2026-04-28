@@ -1,44 +1,39 @@
-import { useState } from 'react'
-import { Card } from 'primereact/card'
-import { Tag } from 'primereact/tag'
-import { Button } from 'primereact/button'
-import { useTimeEntries } from '../hooks/useTimeEntries'
-import ClockButtons from '../components/ClockButtons'
-import TimeEntriesTable from '../components/TimeEntriesTable'
-import LiveClock from '../components/LiveClock'
-import AppTopbar from '../components/AppTopbar'
-import AppSidebar from '../components/AppSidebar'
-import InstallPromptBanner from '../components/InstallPromptBanner'
-import InstallAppButton from '../components/InstallAppButton'
-import LeaveTab from '../components/LeaveTab'
-import ProfileTab from '../components/ProfileTab'
-import { calcDuration } from '../utils/duration'
-import { exportToXLSX } from '../utils/export'
+import { useState } from 'react';
+import { Card } from 'primereact/card';
+import { Tag } from 'primereact/tag';
+import { Button } from 'primereact/button';
+import { useTimeEntries } from '../hooks/useTimeEntries';
+import ClockButtons from '../components/ClockButtons';
+import TimeEntriesTable from '../components/TimeEntriesTable';
+import LiveClock from '../components/LiveClock';
+import AppTopbar from '../components/AppTopbar';
+import AppSidebar from '../components/AppSidebar';
+import InstallAppButton from '../components/InstallAppButton';
+import LeaveTab from '../components/LeaveTab';
+import ProfileTab from '../components/ProfileTab';
+import { calcDuration } from '../utils/duration';
+import { exportToXLSX } from '../utils/export';
 
 const TABS = [
   { label: 'My Clock', icon: 'pi pi-clock', key: 'my-clock' },
   { label: 'My Leave', icon: 'pi pi-calendar', key: 'my-leave' },
   { label: 'My Profile', icon: 'pi pi-user', key: 'my-profile' },
-]
+];
 
 export default function DashboardPage({ session, profile, onLogout }) {
-  const [activeTab, setActiveTab] = useState(0)
-  const { entries, openEntry, loading, clockIn, clockOut } = useTimeEntries(session.user.id, profile?.company_id)
-  const completedEntries = entries.filter(e => e.clock_out)
-  const lastEntry = entries[0]
-  const totalHours = completedEntries.length
-    ? (completedEntries.reduce((sum, e) => sum + Math.max(new Date(e.clock_out) - new Date(e.clock_in), 0), 0) / 3600000).toFixed(1)
-    : '0.0'
+  const [activeTab, setActiveTab] = useState(0);
+  const { entries, openEntry, loading, clockIn, clockOut } = useTimeEntries(session.user.id, profile?.company_id);
+  const completedEntries = entries.filter((e) => e.clock_out);
+  const lastEntry = entries[0];
+  const totalHours = completedEntries.length ? (completedEntries.reduce((sum, e) => sum + Math.max(new Date(e.clock_out) - new Date(e.clock_in), 0), 0) / 3600000).toFixed(1) : '0.0';
 
-  const activeKey = TABS[activeTab]?.key
+  const activeKey = TABS[activeTab]?.key;
 
   return (
     <div className="app-shell">
       <AppTopbar email={session.user.email} subtitle="Attendance workspace" onLogout={onLogout} />
 
       <div className="surface-container content-stack">
-        <InstallPromptBanner />
-
         <Card className="glass-card hero-banner">
           <div className="hero-grid">
             <div className="hero-copy">
@@ -48,9 +43,7 @@ export default function DashboardPage({ session, profile, onLogout }) {
               </div>
               <div>
                 <h1 className="hero-title">A faster, clearer way to manage your workday.</h1>
-                <p className="hero-description">
-                  Track your shift in real time, review recent attendance, and keep your day organized from one clean workspace.
-                </p>
+                <p className="hero-description">Track your shift in real time, review recent attendance, and keep your day organized from one clean workspace.</p>
               </div>
               <div className="hero-meta">
                 <div className="metric-card">
@@ -120,14 +113,7 @@ export default function DashboardPage({ session, profile, onLogout }) {
                       <h2 className="section-title">My time log</h2>
                       <p className="text-muted-soft">Review your recent clock-ins, completed sessions, and working duration.</p>
                     </div>
-                    <Button
-                      label="Export XLSX"
-                      icon="pi pi-file-excel"
-                      severity="success"
-                      outlined
-                      onClick={() => exportToXLSX(entries)}
-                      disabled={entries.length === 0}
-                    />
+                    <Button label="Export XLSX" icon="pi pi-file-excel" severity="success" outlined onClick={() => exportToXLSX(entries)} disabled={entries.length === 0} />
                   </div>
                   <TimeEntriesTable entries={entries} loading={loading} />
                 </Card>
@@ -140,5 +126,5 @@ export default function DashboardPage({ session, profile, onLogout }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

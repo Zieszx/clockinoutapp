@@ -3,56 +3,92 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { useInstallPrompt } from '../hooks/useInstallPrompt'
 
-export default function InstallAppButton({ className = '', label = 'Install App' }) {
+export default function InstallAppButton({ className = '', label = 'Install App', variant = 'card' }) {
   const { canInstall, install, isIOS, isStandalone } = useInstallPrompt()
-  const [showIOSHelp, setShowIOSHelp] = useState(false)
+  const [showGuide, setShowGuide] = useState(false)
+  const isAndroid = /android/i.test(navigator.userAgent)
 
-  if (isStandalone || (!canInstall && !isIOS)) {
+  if (isStandalone) {
     return null
   }
 
+  const buttonLabel = canInstall ? label : isIOS ? 'Add to Home Screen' : 'Install App'
+  const buttonIcon = canInstall ? 'pi pi-download' : 'pi pi-mobile'
+  const buttonAction = canInstall ? install : () => setShowGuide(true)
+
   return (
     <>
-      {canInstall ? (
+      {variant === 'button' ? (
         <Button
-          label={label}
-          icon="pi pi-download"
+          label={buttonLabel}
+          icon={buttonIcon}
           outlined
           className={className}
-          onClick={install}
+          onClick={buttonAction}
         />
       ) : (
-        <Button
-          label="Add to Phone"
-          icon="pi pi-mobile"
-          outlined
-          className={className}
-          onClick={() => setShowIOSHelp(true)}
-        />
+        <div className={`install-cta ${className}`.trim()}>
+          <div className="install-cta-copy">
+            <span className="install-cta-kicker">Install ClockApp</span>
+            <strong>{canInstall ? 'Install this app directly on your device.' : isIOS ? 'Add this app to your iPhone home screen.' : 'Use the fastest install path for this browser.'}</strong>
+            <span>{canInstall ? 'Launch attendance, logs, and admin tools like a native app.' : isIOS ? 'Safari requires Add to Home Screen instead of direct install.' : 'If the browser does not show a direct prompt, use the browser install option once and the app will stay on your device.'}</span>
+          </div>
+          <Button
+            label={buttonLabel}
+            icon={buttonIcon}
+            className="primary-btn install-cta-btn"
+            onClick={buttonAction}
+          />
+        </div>
       )}
 
       <Dialog
-        header="Install on iPhone or iPad"
-        visible={showIOSHelp}
-        onHide={() => setShowIOSHelp(false)}
+        header="Add to Home Screen"
+        visible={showGuide}
+        onHide={() => setShowGuide(false)}
         style={{ width: '420px', maxWidth: '92vw' }}
         modal
       >
         <div className="d-flex flex-column gap-3">
-          <p className="text-muted-soft m-0">To install ClockApp on iOS:</p>
+          <p className="text-muted-soft m-0">
+            {isIOS
+              ? 'On iPhone or iPad, Safari does not allow direct install from a site button.'
+              : isAndroid
+                ? 'If Chrome or Edge does not show the install prompt automatically, use the browser install option once.'
+                : 'If your desktop browser does not show the install prompt automatically, use its install option once.'}
+          </p>
           <div className="install-steps">
-            <div className="install-step">
-              <span>1</span>
-              <strong>Open the Share menu in Safari.</strong>
-            </div>
-            <div className="install-step">
-              <span>2</span>
-              <strong>Select “Add to Home Screen”.</strong>
-            </div>
-            <div className="install-step">
-              <span>3</span>
-              <strong>Confirm the app name and tap “Add”.</strong>
-            </div>
+            {isIOS ? (
+              <>
+                <div className="install-step">
+                  <span>1</span>
+                  <strong>Tap the Share button in Safari.</strong>
+                </div>
+                <div className="install-step">
+                  <span>2</span>
+                  <strong>Select "Add to Home Screen".</strong>
+                </div>
+                <div className="install-step">
+                  <span>3</span>
+                  <strong>Tap "Add" to place ClockApp on your device.</strong>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="install-step">
+                  <span>1</span>
+                  <strong>Open this app in Chrome or Microsoft Edge.</strong>
+                </div>
+                <div className="install-step">
+                  <span>2</span>
+                  <strong>Use the browser menu or address bar install option.</strong>
+                </div>
+                <div className="install-step">
+                  <span>3</span>
+                  <strong>Confirm the install to keep ClockApp on your device.</strong>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </Dialog>
