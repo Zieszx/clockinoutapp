@@ -38,7 +38,14 @@ Deno.serve(async (req: Request) => {
       return Response.json({ error: 'full_name, email, and password are required' }, { status: 400, headers: cors })
     }
 
-    const targetCompanyId = isSuperAdmin ? (company_id ?? null) : cp.company_id
+    const rawCompanyId = isSuperAdmin ? (company_id ?? null) : cp.company_id
+
+    // Validate the company exists before using it — guards against stale UUIDs
+    let targetCompanyId: string | null = null
+    if (rawCompanyId) {
+      const { data: co } = await admin.from('companies').select('id').eq('id', rawCompanyId).maybeSingle()
+      targetCompanyId = co ? rawCompanyId : null
+    }
 
     const { data: { user }, error: ce } = await admin.auth.admin.createUser({
       email: email.trim(), password, email_confirm: true,
