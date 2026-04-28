@@ -30,7 +30,7 @@ export default function AppTopbar({ email, roleLabel, subtitle, onLogout }) {
   )
 
   const end = (
-    <div className="d-flex align-items-center gap-3 flex-wrap justify-content-end">
+    <div className="topbar-actions">
       <div className="theme-switch">
         <i className={`pi ${mode === 'dark' ? 'pi-moon' : 'pi-sun'}`} />
         <InputSwitch checked={mode === 'light'} onChange={() => dispatch(toggleTheme())} />
@@ -47,7 +47,7 @@ export default function AppTopbar({ email, roleLabel, subtitle, onLogout }) {
       )}
       {!isStandalone && isIOS && (
         <span className="install-hint d-none d-md-inline-flex">
-          <i className="pi pi-upload" /> Share → Add to Home Screen
+          <i className="pi pi-upload" /> Share to Add to Home Screen
         </span>
       )}
       <Button label="Sign Out" icon="pi pi-sign-out" size="small" text onClick={onLogout} className="soft-btn" />

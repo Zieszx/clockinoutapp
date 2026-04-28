@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Card } from 'primereact/card'
 import { Tag } from 'primereact/tag'
+import { Button } from 'primereact/button'
 import { useTimeEntries } from '../hooks/useTimeEntries'
 import ClockButtons from '../components/ClockButtons'
 import TimeEntriesTable from '../components/TimeEntriesTable'
@@ -10,6 +11,7 @@ import AppSidebar from '../components/AppSidebar'
 import LeaveTab from '../components/LeaveTab'
 import ProfileTab from '../components/ProfileTab'
 import { calcDuration } from '../utils/duration'
+import { exportToXLSX } from '../utils/export'
 
 const TABS = [
   { label: 'My Clock', icon: 'pi pi-clock', key: 'my-clock' },
@@ -113,6 +115,14 @@ export default function DashboardPage({ session, profile, onLogout }) {
                       <h2 className="section-title">My time log</h2>
                       <p className="text-muted-soft">Review your recent clock-ins, completed sessions, and working duration.</p>
                     </div>
+                    <Button
+                      label="Export XLSX"
+                      icon="pi pi-file-excel"
+                      severity="success"
+                      outlined
+                      onClick={() => exportToXLSX(entries)}
+                      disabled={entries.length === 0}
+                    />
                   </div>
                   <TimeEntriesTable entries={entries} loading={loading} />
                 </Card>
