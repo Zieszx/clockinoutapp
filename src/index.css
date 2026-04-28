@@ -1036,6 +1036,19 @@ a {
   border-radius: 999px !important;
 }
 
+.hero-install-btn.p-button {
+  justify-content: center;
+  border-radius: 1rem !important;
+  border-color: rgba(125, 211, 252, 0.2) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--app-heading) !important;
+}
+
+.hero-install-btn.p-button:hover {
+  background: rgba(125, 211, 252, 0.1) !important;
+  border-color: rgba(125, 211, 252, 0.28) !important;
+}
+
 .admin-tabs.p-tabmenu .p-tabmenu-nav {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);

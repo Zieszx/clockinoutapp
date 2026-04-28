@@ -16,6 +16,7 @@ import ProfileTab from '../components/ProfileTab';
 import AppTopbar from '../components/AppTopbar';
 import AppSidebar from '../components/AppSidebar';
 import InstallPromptBanner from '../components/InstallPromptBanner';
+import InstallAppButton from '../components/InstallAppButton';
 import { calcDuration } from '../utils/duration';
 import { exportToXLSX } from '../utils/export';
 
@@ -94,6 +95,7 @@ export default function AdminPage({ session, profile, onLogout }) {
                 <Tag severity={openEntry ? 'success' : 'info'} value={openEntry ? 'Session running' : 'No active session'} rounded />
                 {profile?.company?.name ? <Tag severity="contrast" value={profile.company.name} rounded /> : null}
               </div>
+              <InstallAppButton className="soft-btn hero-install-btn w-100" />
             </div>
           </div>
         </Card>

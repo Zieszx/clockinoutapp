@@ -9,6 +9,7 @@ import LiveClock from '../components/LiveClock'
 import AppTopbar from '../components/AppTopbar'
 import AppSidebar from '../components/AppSidebar'
 import InstallPromptBanner from '../components/InstallPromptBanner'
+import InstallAppButton from '../components/InstallAppButton'
 import LeaveTab from '../components/LeaveTab'
 import ProfileTab from '../components/ProfileTab'
 import { calcDuration } from '../utils/duration'
@@ -77,6 +78,7 @@ export default function DashboardPage({ session, profile, onLogout }) {
                 <Tag severity={openEntry ? 'success' : 'info'} value={openEntry ? 'Live session running' : 'No active session'} rounded />
                 {profile?.company?.name ? <Tag severity="contrast" value={profile.company.name} rounded /> : null}
               </div>
+              <InstallAppButton className="soft-btn hero-install-btn w-100" />
             </div>
           </div>
         </Card>
