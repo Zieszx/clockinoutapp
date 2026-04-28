@@ -1,20 +1,20 @@
 import { useState } from 'react'
 import { Card } from 'primereact/card'
 import { Tag } from 'primereact/tag'
-import { TabMenu } from 'primereact/tabmenu'
 import { useTimeEntries } from '../hooks/useTimeEntries'
 import ClockButtons from '../components/ClockButtons'
 import TimeEntriesTable from '../components/TimeEntriesTable'
 import LiveClock from '../components/LiveClock'
 import AppTopbar from '../components/AppTopbar'
+import AppSidebar from '../components/AppSidebar'
 import LeaveTab from '../components/LeaveTab'
 import ProfileTab from '../components/ProfileTab'
 import { calcDuration } from '../utils/duration'
 
 const TABS = [
-  { label: 'My Clock', icon: 'pi pi-clock' },
-  { label: 'My Leave', icon: 'pi pi-calendar' },
-  { label: 'My Profile', icon: 'pi pi-user' },
+  { label: 'My Clock', icon: 'pi pi-clock', key: 'my-clock' },
+  { label: 'My Leave', icon: 'pi pi-calendar', key: 'my-leave' },
+  { label: 'My Profile', icon: 'pi pi-user', key: 'my-profile' },
 ]
 
 export default function DashboardPage({ session, profile, onLogout }) {
@@ -25,6 +25,8 @@ export default function DashboardPage({ session, profile, onLogout }) {
   const totalHours = completedEntries.length
     ? (completedEntries.reduce((sum, e) => sum + Math.max(new Date(e.clock_out) - new Date(e.clock_in), 0), 0) / 3600000).toFixed(1)
     : '0.0'
+
+  const activeKey = TABS[activeTab]?.key
 
   return (
     <div className="app-shell">
@@ -74,49 +76,53 @@ export default function DashboardPage({ session, profile, onLogout }) {
           </div>
         </Card>
 
-        <TabMenu model={TABS} activeIndex={activeTab} onTabChange={e => setActiveTab(e.index)} className="admin-tabs" />
+        <div className="app-workspace">
+          <AppSidebar tabs={TABS} activeIndex={activeTab} onSelect={setActiveTab} />
 
-        {activeTab === 0 && (
-          <div className="content-grid">
-            <div className="sidebar-stack">
-              <Card className="glass-card status-panel">
-                <div className="d-flex flex-column gap-3">
-                  <div>
-                    <h2 className="section-title">At a glance</h2>
-                    <p className="section-copy">Quick context for your most recent attendance activity.</p>
-                  </div>
-                  <div className="status-grid">
-                    <div className="status-highlight">
-                      <div className="status-tile-label">Last recorded duration</div>
-                      <div className="status-tile-value">{lastEntry ? calcDuration(lastEntry.clock_in, lastEntry.clock_out) : 'No activity yet'}</div>
+          <div className="app-content">
+            {activeKey === 'my-clock' && (
+              <div className="content-grid">
+                <div className="sidebar-stack">
+                  <Card className="glass-card status-panel">
+                    <div className="d-flex flex-column gap-3">
+                      <div>
+                        <h2 className="section-title">At a glance</h2>
+                        <p className="section-copy">Quick context for your most recent attendance activity.</p>
+                      </div>
+                      <div className="status-grid">
+                        <div className="status-highlight">
+                          <div className="status-tile-label">Last recorded duration</div>
+                          <div className="status-tile-value">{lastEntry ? calcDuration(lastEntry.clock_in, lastEntry.clock_out) : 'No activity yet'}</div>
+                        </div>
+                        <div className="status-tile">
+                          <div className="status-tile-label">Company</div>
+                          <div className="status-tile-value">{profile?.company?.name || 'Not assigned'}</div>
+                        </div>
+                        <div className="status-tile">
+                          <div className="status-tile-label">Last login</div>
+                          <div className="status-tile-value">{profile?.last_login_at ? new Date(profile.last_login_at).toLocaleString() : 'First login not recorded'}</div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="status-tile">
-                      <div className="status-tile-label">Company</div>
-                      <div className="status-tile-value">{profile?.company?.name || 'Not assigned'}</div>
-                    </div>
-                    <div className="status-tile">
-                      <div className="status-tile-label">Last login</div>
-                      <div className="status-tile-value">{profile?.last_login_at ? new Date(profile.last_login_at).toLocaleString() : 'First login not recorded'}</div>
-                    </div>
-                  </div>
+                  </Card>
                 </div>
-              </Card>
-            </div>
 
-            <Card className="glass-card logs-card table-panel">
-              <div className="table-header">
-                <div className="table-header-copy">
-                  <h2 className="section-title">My time log</h2>
-                  <p className="text-muted-soft">Review your recent clock-ins, completed sessions, and working duration.</p>
-                </div>
+                <Card className="glass-card logs-card table-panel">
+                  <div className="table-header">
+                    <div className="table-header-copy">
+                      <h2 className="section-title">My time log</h2>
+                      <p className="text-muted-soft">Review your recent clock-ins, completed sessions, and working duration.</p>
+                    </div>
+                  </div>
+                  <TimeEntriesTable entries={entries} loading={loading} />
+                </Card>
               </div>
-              <TimeEntriesTable entries={entries} loading={loading} />
-            </Card>
-          </div>
-        )}
+            )}
 
-        {activeTab === 1 && <LeaveTab userId={session.user.id} companyId={profile?.company_id} />}
-        {activeTab === 2 && <ProfileTab profile={profile} />}
+            {activeKey === 'my-leave' && <LeaveTab userId={session.user.id} companyId={profile?.company_id} />}
+            {activeKey === 'my-profile' && <ProfileTab profile={profile} />}
+          </div>
+        </div>
       </div>
     </div>
   )

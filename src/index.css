@@ -970,6 +970,105 @@ a {
   }
 }
 
+/* ── Sidebar workspace layout ─────────────────────── */
+.app-workspace {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.app-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-sidebar {
+  width: 210px;
+  min-width: 180px;
+  flex-shrink: 0;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  position: sticky;
+  top: 1rem;
+}
+
+.app-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.6rem;
+  border: none;
+  background: none;
+  color: var(--app-text-soft);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.app-sidebar-item i {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.app-sidebar-item:hover {
+  background: rgba(2, 132, 199, 0.08);
+  color: var(--app-text);
+}
+
+.app-sidebar-item.active {
+  background: rgba(2, 132, 199, 0.15);
+  color: var(--app-accent);
+  font-weight: 600;
+}
+
+:root[data-theme='light'] .app-sidebar-item:hover {
+  background: rgba(2, 132, 199, 0.07);
+}
+
+:root[data-theme='light'] .app-sidebar-item.active {
+  background: rgba(2, 132, 199, 0.12);
+}
+
+/* Mobile: sidebar becomes a horizontal scroll bar */
+@media (max-width: 768px) {
+  .app-workspace {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .app-sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0.4rem;
+    border-radius: 0.75rem;
+    position: static;
+  }
+
+  .app-sidebar::-webkit-scrollbar { display: none; }
+
+  .app-sidebar-item {
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .app-sidebar-item i { font-size: 1rem; }
+}
+
 /* Search results dropdown */
 .search-results-list {
   border: 1px solid var(--app-border);
@@ -1018,11 +1117,3 @@ a {
   border-top: 1px solid var(--app-border) !important;
 }
 
-/* Scrollable admin tabs */
-.admin-tabs .p-tabmenu-nav {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.admin-tabs .p-tabmenu-nav::-webkit-scrollbar { display: none; }

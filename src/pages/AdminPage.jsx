@@ -1,27 +1,27 @@
-import { useMemo, useState } from 'react'
-import { TabMenu } from 'primereact/tabmenu'
-import { Card } from 'primereact/card'
-import { Tag } from 'primereact/tag'
-import { useTimeEntries } from '../hooks/useTimeEntries'
-import ClockButtons from '../components/ClockButtons'
-import TimeEntriesTable from '../components/TimeEntriesTable'
-import LiveClock from '../components/LiveClock'
-import AdminLogsTab from '../components/AdminLogsTab'
-import MaintenanceTab from '../components/MaintenanceTab'
-import AdminUsersTab from '../components/AdminUsersTab'
-import AllUsersTab from '../components/AllUsersTab'
-import CompaniesTab from '../components/CompaniesTab'
-import LeaveTab from '../components/LeaveTab'
-import ProfileTab from '../components/ProfileTab'
-import AppTopbar from '../components/AppTopbar'
-import { calcDuration } from '../utils/duration'
+import { useMemo, useState } from 'react';
+import { Card } from 'primereact/card';
+import { Tag } from 'primereact/tag';
+import { useTimeEntries } from '../hooks/useTimeEntries';
+import ClockButtons from '../components/ClockButtons';
+import TimeEntriesTable from '../components/TimeEntriesTable';
+import LiveClock from '../components/LiveClock';
+import AdminLogsTab from '../components/AdminLogsTab';
+import MaintenanceTab from '../components/MaintenanceTab';
+import AdminUsersTab from '../components/AdminUsersTab';
+import AllUsersTab from '../components/AllUsersTab';
+import CompaniesTab from '../components/CompaniesTab';
+import LeaveTab from '../components/LeaveTab';
+import ProfileTab from '../components/ProfileTab';
+import AppTopbar from '../components/AppTopbar';
+import AppSidebar from '../components/AppSidebar';
+import { calcDuration } from '../utils/duration';
 
 export default function AdminPage({ session, profile, onLogout }) {
-  const [activeTab, setActiveTab] = useState(0)
-  const { entries, openEntry, loading, clockIn, clockOut } = useTimeEntries(session.user.id, profile?.company_id)
-  const roles = profile?.roles || []
-  const isSuperAdmin = roles.includes('super_admin')
-  const isAdmin = roles.includes('admin') || isSuperAdmin
+  const [activeTab, setActiveTab] = useState(0);
+  const { entries, openEntry, loading, clockIn, clockOut } = useTimeEntries(session.user.id, profile?.company_id);
+  const roles = profile?.roles || [];
+  const isSuperAdmin = roles.includes('super_admin');
+  const isAdmin = roles.includes('admin') || isSuperAdmin;
 
   const tabs = useMemo(() => {
     const t = [
@@ -29,23 +29,23 @@ export default function AdminPage({ session, profile, onLogout }) {
       { label: 'My Logs', icon: 'pi pi-list', key: 'my-logs' },
       { label: 'My Leave', icon: 'pi pi-calendar', key: 'my-leave' },
       { label: 'My Profile', icon: 'pi pi-user', key: 'my-profile' },
-    ]
+    ];
     if (isAdmin) {
-      t.push({ label: 'Team Logs', icon: 'pi pi-chart-bar', key: 'team-logs' })
-      t.push({ label: 'Team Users', icon: 'pi pi-users', key: 'team-users' })
-      t.push({ label: 'Maintenance', icon: 'pi pi-cog', key: 'maintenance' })
+      t.push({ label: 'Team Logs', icon: 'pi pi-chart-bar', key: 'team-logs' });
+      t.push({ label: 'Team Users', icon: 'pi pi-users', key: 'team-users' });
+      t.push({ label: 'Maintenance', icon: 'pi pi-cog', key: 'maintenance' });
     }
     if (isSuperAdmin) {
-      t.push({ label: 'Companies', icon: 'pi pi-building', key: 'companies' })
-      t.push({ label: 'All Users', icon: 'pi pi-globe', key: 'all-users' })
+      t.push({ label: 'Companies', icon: 'pi pi-building', key: 'companies' });
+      t.push({ label: 'All Users', icon: 'pi pi-globe', key: 'all-users' });
     }
-    return t
-  }, [isAdmin, isSuperAdmin])
+    return t;
+  }, [isAdmin, isSuperAdmin]);
 
-  const activeKey = tabs[activeTab]?.key
-  const latestEntry = entries[0]
-  const completedEntries = entries.filter(e => e.clock_out)
-  const roleLabel = isSuperAdmin ? 'Super Admin' : 'Admin'
+  const activeKey = tabs[activeTab]?.key;
+  const latestEntry = entries[0];
+  const completedEntries = entries.filter((e) => e.clock_out);
+  const roleLabel = isSuperAdmin ? 'Super Admin' : 'Admin';
 
   return (
     <div className="app-shell">
@@ -61,9 +61,7 @@ export default function AdminPage({ session, profile, onLogout }) {
               </div>
               <div>
                 <h1 className="hero-title">Monitor attendance, exports, and office settings in one place.</h1>
-                <p className="hero-description">
-                  Use the admin console to manage your own shift, review workforce logs, and maintain office check-in rules.
-                </p>
+                <p className="hero-description">Use the admin console to manage your own shift, review workforce logs, and maintain office check-in rules.</p>
               </div>
               <div className="hero-meta">
                 <div className="metric-card">
@@ -94,70 +92,74 @@ export default function AdminPage({ session, profile, onLogout }) {
           </div>
         </Card>
 
-        <TabMenu model={tabs} activeIndex={activeTab} onTabChange={e => setActiveTab(e.index)} className="admin-tabs" />
+        <div className="app-workspace">
+          <AppSidebar tabs={tabs} activeIndex={activeTab} onSelect={setActiveTab} />
 
-        {activeKey === 'my-clock' && (
-          <div className="content-grid">
-            <div className="sidebar-stack">
-              <Card className="glass-card clock-card status-panel">
-                <div className="d-flex flex-column gap-4">
-                  <div>
-                    <h2 className="section-title">My shift controls</h2>
-                    <p className="section-copy">Manage your own attendance alongside your admin duties.</p>
-                  </div>
-                  <ClockButtons openEntry={openEntry} loading={loading} onClockIn={clockIn} onClockOut={clockOut} />
-                </div>
-              </Card>
-
-              <Card className="glass-card status-panel">
-                <div className="d-flex flex-column gap-3">
-                  <h2 className="section-title">Quick view</h2>
-                  <div className="status-grid">
-                    <div className="status-tile">
-                      <div className="status-tile-label">Company</div>
-                      <div className="status-tile-value">{profile?.company?.name || 'Not assigned'}</div>
+          <div className="app-content">
+            {activeKey === 'my-clock' && (
+              <div className="content-grid">
+                <div className="sidebar-stack">
+                  <Card className="glass-card clock-card status-panel">
+                    <div className="d-flex flex-column gap-4">
+                      <div>
+                        <h2 className="section-title">My shift controls</h2>
+                        <p className="section-copy">Manage your own attendance alongside your admin duties.</p>
+                      </div>
+                      <ClockButtons openEntry={openEntry} loading={loading} onClockIn={clockIn} onClockOut={clockOut} />
                     </div>
-                    <div className="status-tile">
-                      <div className="status-tile-label">Last clock-in</div>
-                      <div className="status-tile-value">{latestEntry ? new Date(latestEntry.clock_in).toLocaleString() : 'No entries yet'}</div>
+                  </Card>
+
+                  <Card className="glass-card status-panel">
+                    <div className="d-flex flex-column gap-3">
+                      <h2 className="section-title">Quick view</h2>
+                      <div className="status-grid">
+                        <div className="status-tile">
+                          <div className="status-tile-label">Company</div>
+                          <div className="status-tile-value">{profile?.company?.name || 'Not assigned'}</div>
+                        </div>
+                        <div className="status-tile">
+                          <div className="status-tile-label">Last clock-in</div>
+                          <div className="status-tile-value">{latestEntry ? new Date(latestEntry.clock_in).toLocaleString() : 'No entries yet'}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+
+                <Card className="glass-card logs-card table-panel">
+                  <div className="table-header">
+                    <div className="table-header-copy">
+                      <h2 className="section-title">My time log</h2>
+                      <p className="text-muted-soft">Review your own attendance without leaving the console.</p>
                     </div>
                   </div>
-                </div>
-              </Card>
-            </div>
-
-            <Card className="glass-card logs-card table-panel">
-              <div className="table-header">
-                <div className="table-header-copy">
-                  <h2 className="section-title">My time log</h2>
-                  <p className="text-muted-soft">Review your own attendance without leaving the console.</p>
-                </div>
+                  <TimeEntriesTable entries={entries} loading={loading} />
+                </Card>
               </div>
-              <TimeEntriesTable entries={entries} loading={loading} />
-            </Card>
+            )}
+
+            {activeKey === 'my-logs' && (
+              <Card className="glass-card logs-card">
+                <div className="table-header">
+                  <div className="table-header-copy">
+                    <h2 className="section-title">My time log</h2>
+                    <p className="text-muted-soft">Complete history of your clock-ins and outs.</p>
+                  </div>
+                </div>
+                <TimeEntriesTable entries={entries} loading={loading} />
+              </Card>
+            )}
+
+            {activeKey === 'my-leave' && <LeaveTab userId={session.user.id} companyId={profile?.company_id} />}
+            {activeKey === 'my-profile' && <ProfileTab profile={profile} />}
+            {activeKey === 'team-logs' && <AdminLogsTab companyId={profile?.company_id} />}
+            {activeKey === 'team-users' && <AdminUsersTab profile={profile} />}
+            {activeKey === 'maintenance' && <MaintenanceTab profile={profile} />}
+            {activeKey === 'companies' && <CompaniesTab session={session} />}
+            {activeKey === 'all-users' && <AllUsersTab />}
           </div>
-        )}
-
-        {activeKey === 'my-logs' && (
-          <Card className="glass-card logs-card">
-            <div className="table-header">
-              <div className="table-header-copy">
-                <h2 className="section-title">My time log</h2>
-                <p className="text-muted-soft">Complete history of your clock-ins and outs.</p>
-              </div>
-            </div>
-            <TimeEntriesTable entries={entries} loading={loading} />
-          </Card>
-        )}
-
-        {activeKey === 'my-leave' && <LeaveTab userId={session.user.id} companyId={profile?.company_id} />}
-        {activeKey === 'my-profile' && <ProfileTab profile={profile} />}
-        {activeKey === 'team-logs' && <AdminLogsTab companyId={profile?.company_id} />}
-        {activeKey === 'team-users' && <AdminUsersTab profile={profile} />}
-        {activeKey === 'maintenance' && <MaintenanceTab session={session} profile={profile} />}
-        {activeKey === 'companies' && <CompaniesTab session={session} />}
-        {activeKey === 'all-users' && <AllUsersTab />}
+        </div>
       </div>
     </div>
-  )
+  );
 }
