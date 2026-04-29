@@ -20,8 +20,21 @@ export function useTimeEntries(userId, companyId) {
     if (open) {
       const entryDate = new Date(open.clock_in).toDateString()
       if (entryDate !== new Date().toDateString()) {
+        let autoClockOut
+        if (companyId) {
+          const { data: company } = await supabase.from('companies').select('shift_end').eq('id', companyId).single()
+          const shiftEnd = company?.shift_end || '18:00'
+          const [hours, minutes] = shiftEnd.split(':').map(Number)
+          const d = new Date(open.clock_in)
+          d.setHours(hours, minutes, 0, 0)
+          autoClockOut = d.toISOString()
+        } else {
+          const d = new Date(open.clock_in)
+          d.setHours(18, 0, 0, 0)
+          autoClockOut = d.toISOString()
+        }
         await supabase.from('time_entries')
-          .update({ clock_out: open.clock_in, is_auto_clocked_out: true })
+          .update({ clock_out: autoClockOut, is_auto_clocked_out: true })
           .eq('id', open.id)
         setOpenEntry(null)
       } else {
